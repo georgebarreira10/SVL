@@ -8,6 +8,7 @@ import Row from "react-bootstrap/Row";
 export function FormBook() {
   const [validated, setValidated] = useState(false);
   let [estados, setEstados] = useState([]);
+  let [cidades, setCidades] = useState([]);
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -21,18 +22,29 @@ export function FormBook() {
 
   const fetchEstados = () => {
     //por padrao o metodo fetch é o Get
-    fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados")
+    fetch(
+      "https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome"
+    )
       .then((response) => response.json())
       .then((data) => {
-        //console.log("estados", data);
+        //console.log(data)
         setEstados(data);
+      
       });
+  };
+
+  const fetchCidades = (sigla) => {
+    fetch(
+      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${sigla}/municipios`
+    )
+      .then((response) => response.json())
+      .then((data) => console.log("cidades", data));
   };
 
   useEffect(() => {
     console.log("useEffect");
     fetchEstados();
-  },[]);
+  }, []);
 
   return (
     <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -76,39 +88,25 @@ export function FormBook() {
         </Form.Group> */}
       </Row>
       <Row className="mb-3">
-        <Form.Group as={Col} md="6" controlId="validationCustom03">
-          <Form.Label>City</Form.Label>
-          <Form.Control type="text" placeholder="City" required />
-          <Form.Control.Feedback type="invalid">
-            Please provide a valid city.
-          </Form.Control.Feedback>
-        </Form.Group>
-
         <Form.Group as={Col} md="3" controlId="validationCustom04">
           <Form.Label>Estado</Form.Label>
-          <Form.Select aria-label="Default select example">
+          <Form.Select
+            aria-label="Default select example"
+            onChange={e => {
+              let sigla = e.target.value;
+
+              fetchCidades(sigla);
+            }}
+>
             <option>Selecione...</option>
-            
-            {console.log("estados", estados)}
+
+            {estados.map((estado) => (
+              <option value={estado.sigla}>{estado.nome}</option>
+            ))}
           </Form.Select>
         </Form.Group>
-
-        <Form.Group as={Col} md="3" controlId="validationCustom05">
-          <Form.Label>Zip</Form.Label>
-          <Form.Control type="text" placeholder="Zip" required />
-          <Form.Control.Feedback type="invalid">
-            Please provide a valid zip.
-          </Form.Control.Feedback>
-        </Form.Group>
       </Row>
-      {/* <Form.Group className="mb-3">
-        <Form.Check
-          required
-          label="Agree to terms and conditions"
-          feedback="You must agree before submitting."
-          feedbackType="invalid"
-        />
-      </Form.Group> */}
+
       <Button type="submit">Submit form</Button>
     </Form>
   );
