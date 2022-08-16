@@ -1,34 +1,43 @@
-import React, { useEffect, useState } from "react";
-import BootstrapTable from "react-bootstrap-table-next";
-
+import React, { useEffect, useState } from 'react';
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 export default function BookTable() {
-  let [posts, setPosts] = useState([]);
+  
+  //let [posts, setPosts] = useState([]);
+  // criar state que vai conter a lista da api
+  let [comments, setComments] = useState([]);
+
+  //criar o objeto colunas no qual o datafield é a propriedade do objeto
 
   const columns = [
     {
-      dataField: "id",
-      text: "Id",
+      dataField: 'id',
+      text: 'Id',
     },
     {
-      dataField: "body",
-      text: "Texto",
+      dataField: 'name',
+      text: 'Nome',
     },
     {
-      dataField: "id",
-      text: "Id",
+      dataField: 'email',
+      text: 'E-mail',
+    },
+    {
+      dataField: 'body',
+      text: 'Texto',
     },
   ];
-  const getPosts = () => {
-    fetch("https://jsonplaceholder.typicode.com/posts")
+  const getComments = () => {
+    fetch('https://jsonplaceholder.typicode.com/comments')
       .then((response) => response.json())
       .then((data) => {
         //console.log("posts", data);
-        setPosts(data);
+        setComments(data);
       });
   };
 
   useEffect(() => {
-    getPosts();
+    getComments();
   }, []);
 
   /* const columns = [
@@ -61,7 +70,9 @@ export default function BookTable() {
 
   return (
     <div>
-      <BootstrapTable keyField="id" data={posts} columns={columns} />
+      <BootstrapTable keyField='id' data={comments} columns={columns} pagination={ paginationFactory() } />
+      
+      
     </div>
   );
 }
